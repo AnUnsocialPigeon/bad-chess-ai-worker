@@ -61,21 +61,24 @@ export default {
 					}
 
 					if (move.san.includes('#')) score += 100;
-					if (move.san.includes('+')) score += 0.7;
-					if (move.san.includes('O-O')) score += 0.4;
-					if (move.promotion) score += 0.4;
+					if (move.san.includes('+')) score += 0.3;
+					if (move.san.includes('O-O')) score += 0.25;
+					if (move.promotion) score += 0.27;
 					if (move.piece === "k") score -= 0.2;
 
 					// Capture logic
 					if (pieceFrom && pieceTo) {
 						console.log(`${pieceFrom} -> ${pieceTo} = ${pieceScores[pieceFrom.type]} -> ${pieceScores[pieceTo.type]}`)
-						if (pieceScores[pieceFrom.type] <= pieceScores[pieceTo.type]) score += 0.7;
+						if (pieceScores[pieceFrom.type] <= pieceScores[pieceTo.type]) 
+							score += (pieceScores[pieceFrom.type] - pieceScores[pieceTo.type]) / 5;
+						else
+							score -= (pieceScores[pieceFrom.type] - pieceScores[pieceTo.type]) / 5;
 					}
 
 					// Hung material logic
-					if (chess.isAttacked(move.from, move.color === "w" ? "b" : "w") && !chess.isAttacked(move.from, move.color))
-						score -= 0.3;
-
+					else if (chess.isAttacked(move.from, move.color === "w" ? "b" : "w") && !chess.isAttacked(move.from, move.color))
+						score += pieceScores[pieceFrom.type] / 5;
+					
 					return {
 						move: move.san,
 						score: score
